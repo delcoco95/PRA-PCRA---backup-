@@ -1,0 +1,274 @@
+Vagrant.configure("2") do |config|
+  config.vm.box = "ubuntu/jammy64"
+  config.vm.hostname = "srv-monitoring"
+
+  # IP du serveur de monitoring
+  config.vm.network "private_network", ip: "192.168.56.30"
+
+  config.vm.provider "virtualbox" do |vb|
+    vb.name = "SRV_MONITORING"
+    vb.memory = 2048
+    vb.cpus = 2
+  end
+
+  config.vm.provision "shell", inline: <<-SHELL
+    set -e
+
+    echo "[1/6] Mise à jour du système..."
+    apt-get update -y
+    apt-get upgrade -y
+
+    echo "[2/6] Installation des dépendances..."
+    apt-get install -y curl wget vim htop ufw apt-transport-https software-properties-common
+
+    # ─── PROMETHEUS ──────────────────────────────────────────────────────────
+    echo "[3/6] Installation de Prometheus..."
+    PROM_VERSION="2.54.1"
+    cd /tmp
+    wget -q https://github.com/prometheus/prometheus/releases/download/v${PROM_VERSION}/prometheus-${PROM_VERSION}.linux-amd64.tar.gz
+    tar -xzf prometheus-${PROM_VERSION}.linux-amd64.tar.gz
+    mv prometheus-${PROM_VERSION}.linux-amd64 prometheus
+
+    useradd --no-create-home --shell /bin/false prometheus || true
+    mkdir -p /etc/prometheus /var/lib/prometheus
+    cp prometheus/prometheus /usr/local/bin/
+    cp prometheus/promtool /usr/local/bin/
+    cp -r prometheus/consoles /etc/prometheus/
+    cp -r prometheus/console_libraries /etc/prometheus/
+    chown -R prometheus:prometheus /etc/prometheus /var/lib/prometheus
+    chown prometheus:prometheus /usr/local/bin/prometheus /usr/local/bin/promtool
+
+    # Configuration Prometheus - surveille le serveur backup + lui-même
+    cat > /etc/prometheus/prometheus.yml <<'EOF'
+global:
+  scrape_interval: 15s
+  evaluation_interval: 15s
+
+alerting:
+  alertmanagers:
+    - static_configs:
+        - targets: ['localhost:9093']
+
+rule_files:
+  - "/etc/prometheus/alerts.yml"
+
+scrape_configs:
+  - job_name: 'prometheus'
+    static_configs:
+      - targets: ['localhost:9090']
+
+  - job_name: 'srv-monitoring'
+    static_configs:
+      - targets: ['192.168.56.30:9100']
+        labels:
+          instance: 'srv-monitoring'
+
+  - job_name: 'srv-backup'
+    static_configs:
+      - targets: ['192.168.56.20:9100']
+        labels:
+          instance: 'srv-backup'
+
+  - job_name: 'srv-mediaschool'
+    static_configs:
+      - targets: ['192.168.56.11:9100']
+        labels:
+          instance: 'srv-mediaschool-copy'
+
+  - job_name: 'borg-backup'
+    static_configs:
+      - targets: ['192.168.56.20:9099']
+        labels:
+          instance: 'borg-exporter'
+EOF
+
+    # Règles d'alertes
+    cat > /etc/prometheus/alerts.yml <<'EOF'
+groups:
+  - name: backup_alerts
+    rules:
+
+      # Alerte si un serveur est down
+      - alert: InstanceDown
+        expr: up == 0
+        for: 1m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Serveur {{ $labels.instance }} inaccessible"
+          description: "{{ $labels.instance }} ne répond plus depuis plus d'1 minute."
+
+      # Alerte si la dernière sauvegarde date de plus de 25h
+      - alert: BackupTooOld
+        expr: time() - borg_last_backup_timestamp > 90000
+        for: 5m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Sauvegarde BorgBackup en retard"
+          description: "Aucune sauvegarde réussie depuis plus de 25 heures."
+
+      # Alerte si le disque de backup est rempli à plus de 85%
+      - alert: BackupDiskFull
+        expr: (node_filesystem_avail_bytes{mountpoint="/srv"} / node_filesystem_size_bytes{mountpoint="/srv"}) * 100 < 15
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Disque de sauvegarde presque plein"
+          description: "Moins de 15% d'espace libre sur /srv (serveur backup)."
+EOF
+
+    chown -R prometheus:prometheus /etc/prometheus
+
+    # Service systemd Prometheus
+    cat > /etc/systemd/system/prometheus.service <<'EOF'
+[Unit]
+Description=Prometheus Monitoring
+Wants=network-online.target
+After=network-online.target
+
+[Service]
+User=prometheus
+Group=prometheus
+Type=simple
+ExecStart=/usr/local/bin/prometheus \
+  --config.file=/etc/prometheus/prometheus.yml \
+  --storage.tsdb.path=/var/lib/prometheus/ \
+  --web.console.templates=/etc/prometheus/consoles \
+  --web.console.libraries=/etc/prometheus/console_libraries \
+  --web.listen-address=0.0.0.0:9090
+
+[Install]
+WantedBy=multi-user.target
+EOF
+
+    systemctl daemon-reload
+    systemctl enable prometheus
+    systemctl start prometheus
+
+    # ─── ALERTMANAGER ────────────────────────────────────────────────────────
+    echo "[4/6] Installation d'Alertmanager..."
+    AM_VERSION="0.27.0"
+    cd /tmp
+    wget -q https://github.com/prometheus/alertmanager/releases/download/v${AM_VERSION}/alertmanager-${AM_VERSION}.linux-amd64.tar.gz
+    tar -xzf alertmanager-${AM_VERSION}.linux-amd64.tar.gz
+    mv alertmanager-${AM_VERSION}.linux-amd64 alertmanager
+
+    useradd --no-create-home --shell /bin/false alertmanager || true
+    mkdir -p /etc/alertmanager /var/lib/alertmanager
+    cp alertmanager/alertmanager /usr/local/bin/
+    cp alertmanager/amtool /usr/local/bin/
+    chown alertmanager:alertmanager /usr/local/bin/alertmanager /usr/local/bin/amtool
+
+    cat > /etc/alertmanager/alertmanager.yml <<'EOF'
+global:
+  resolve_timeout: 5m
+
+route:
+  group_by: ['alertname']
+  group_wait: 10s
+  group_interval: 10s
+  repeat_interval: 1h
+  receiver: 'webhook-log'
+
+receivers:
+  - name: 'webhook-log'
+    webhook_configs:
+      - url: 'http://localhost:5001/alert'
+        send_resolved: true
+EOF
+    # NOTE : Pour activer les alertes mail, remplacer webhook-log par :
+    # email_configs:
+    #   - to: 'admin@iris-nice.fr'
+    #     from: 'alertmanager@iris-nice.fr'
+    #     smarthost: 'smtp.gmail.com:587'
+
+    chown -R alertmanager:alertmanager /etc/alertmanager /var/lib/alertmanager
+
+    cat > /etc/systemd/system/alertmanager.service <<'EOF'
+[Unit]
+Description=Alertmanager
+Wants=network-online.target
+After=network-online.target
+
+[Service]
+User=alertmanager
+Group=alertmanager
+Type=simple
+ExecStart=/usr/local/bin/alertmanager \
+  --config.file=/etc/alertmanager/alertmanager.yml \
+  --storage.path=/var/lib/alertmanager
+
+[Install]
+WantedBy=multi-user.target
+EOF
+
+    systemctl daemon-reload
+    systemctl enable alertmanager
+    systemctl start alertmanager
+
+    # ─── NODE EXPORTER ───────────────────────────────────────────────────────
+    echo "[5/6] Installation de Node Exporter..."
+    NE_VERSION="1.8.1"
+    cd /tmp
+    wget -q https://github.com/prometheus/node_exporter/releases/download/v${NE_VERSION}/node_exporter-${NE_VERSION}.linux-amd64.tar.gz
+    tar -xzf node_exporter-${NE_VERSION}.linux-amd64.tar.gz
+
+    useradd --no-create-home --shell /bin/false node_exporter || true
+    cp node_exporter-${NE_VERSION}.linux-amd64/node_exporter /usr/local/bin/
+    chown node_exporter:node_exporter /usr/local/bin/node_exporter
+
+    cat > /etc/systemd/system/node_exporter.service <<'EOF'
+[Unit]
+Description=Node Exporter
+Wants=network-online.target
+After=network-online.target
+
+[Service]
+User=node_exporter
+Group=node_exporter
+Type=simple
+ExecStart=/usr/local/bin/node_exporter
+
+[Install]
+WantedBy=multi-user.target
+EOF
+
+    systemctl daemon-reload
+    systemctl enable node_exporter
+    systemctl start node_exporter
+
+    # ─── GRAFANA ─────────────────────────────────────────────────────────────
+    echo "[6/6] Installation de Grafana..."
+    wget -q -O /usr/share/keyrings/grafana.key https://apt.grafana.com/gpg.key
+    echo "deb [signed-by=/usr/share/keyrings/grafana.key] https://apt.grafana.com stable main" \
+      | tee /etc/apt/sources.list.d/grafana.list
+    apt-get update -y
+    apt-get install -y grafana
+
+    systemctl enable grafana-server
+    systemctl start grafana-server
+
+    # ─── UFW ─────────────────────────────────────────────────────────────────
+    ufw --force reset
+    ufw default deny incoming
+    ufw default allow outgoing
+    ufw allow 22/tcp    # SSH
+    ufw allow 9090/tcp  # Prometheus
+    ufw allow 9093/tcp  # Alertmanager
+    ufw allow 9100/tcp  # Node Exporter
+    ufw allow 3000/tcp  # Grafana
+    ufw --force enable
+
+    echo ""
+    echo "=============================================="
+    echo " SRV_MONITORING provisionné avec succès !"
+    echo "=============================================="
+    echo " Grafana    : http://192.168.56.30:3000"
+    echo "             Login : admin / admin"
+    echo " Prometheus : http://192.168.56.30:9090"
+    echo " Alertmanager: http://192.168.56.30:9093"
+    echo "=============================================="
+  SHELL
+end

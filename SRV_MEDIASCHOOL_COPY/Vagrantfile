@@ -1,0 +1,87 @@
+Vagrant.configure("2") do |config|
+  # Box de base : Ubuntu 22.04
+  config.vm.box = "ubuntu/jammy64"
+  config.vm.hostname = "srv-mediaschool-copy"
+
+  # Réseau privé : la VM sera en 192.168.56.11
+  # Ton PC hôte est en 192.168.56.1 sur ce réseau : il pourra accéder aux services.
+  config.vm.network "private_network", ip: "192.168.56.11"
+
+  # Réseau public : interface en mode bridge pour le VLAN 99
+  config.vm.network "public_network",
+    bridge: "USB2.0 Ethernet Adapter",  # Remplace par l'interface physique de ton PC hôte
+    ip: "192.168.99.21", # Remplace par une IP libre dans ton VLAN 99
+    netmask: "255.255.255.0"
+
+  # Ressources de la VM
+  config.vm.provider "virtualbox" do |vb|
+    vb.name = "SRV_MEDIASCHOOL_COPY"
+    vb.memory = 2048
+    vb.cpus = 2
+  end
+
+  # Provisionning : Docker + pare-feu + user adminedj
+  config.vm.provision "shell", inline: <<-SHELL
+    set -e
+
+    echo "[1/5] Mise à jour du système..."
+    apt-get update -y
+
+    echo "[2/5] Installation des outils de base et de Docker..."
+    apt-get install -y apt-transport-https ca-certificates curl software-properties-common gnupg lsb-release
+
+    install -m 0755 -d /etc/apt/keyrings
+    curl -fsSL https://download.docker.com/linux/ubuntu/gpg | gpg --dearmor -o /etc/apt/keyrings/docker.gpg
+    chmod a+r /etc/apt/keyrings/docker.gpg
+
+    echo \
+      "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/ubuntu \
+      $(lsb_release -cs) stable" | tee /etc/apt/sources.list.d/docker.list > /dev/null
+
+    apt-get update -y
+    apt-get install -y docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin ufw nftables
+
+    # Ajout de l'utilisateur vagrant au groupe docker
+    usermod -aG docker vagrant
+
+    echo "[3/5] Création de l'utilisateur adminedj..."
+    if ! id "adminedj" >/dev/null 2>&1; then
+      useradd -m -s /bin/bash adminedj
+      echo 'adminedj:123456789' | chpasswd
+      usermod -aG sudo adminedj
+    fi
+
+    echo "[4/5] Configuration simple de UFW..."
+    ufw --force reset
+    ufw default deny incoming
+    ufw default allow outgoing
+
+    # Ouverture des ports nécessaires
+    ufw allow 22/tcp       # SSH
+    ufw allow 389/tcp      # LDAP
+    ufw allow 636/tcp      # LDAPS (si activé plus tard)
+    ufw allow 8080/tcp     # phpLDAPadmin
+    ufw allow 51821/tcp    # Interface web wg-easy
+    ufw allow 51820/udp    # WireGuard VPN
+    ufw allow 3310/tcp     # ClamAV (optionnel)
+
+    ufw --force enable
+
+    # nftables : activation de base
+    systemctl enable nftables
+    systemctl start nftables
+
+    echo "[5/5] Lancement des conteneurs Docker..."
+    cd /vagrant
+
+    # S'assure que les dossiers de volumes existent
+    mkdir -p ldap/database ldap/config ldap/certs
+    mkdir -p wireguard/data
+    mkdir -p clamav/a_scanner
+    mkdir -p wireguard_clients
+
+    docker compose up -d || true
+
+    echo "Provision terminé."
+  SHELL
+end
