@@ -144,8 +144,6 @@ RP06/
 ## Liens
 
 - Portfolio: https://delcoco95.github.io/portfolio-nedj/
-- Annexe 7 RP06: voir `Documentation/07_Annexe7_Fiche_E5.md`
-- Acces/Credentials: voir `Documentation/08_Credentials_Access_RP06.md`
 
 ---
 *Nedjmeddine Belloum — BTS SIO SISR — MEDIASCHOOL IRIS Nice — 2025-2026*
