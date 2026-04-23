@@ -1,0 +1,20 @@
+﻿# FreeRADIUS users — RP06 IRIS Nice
+# Utilisateurs pour tests 802.1X
+
+# Etudiants
+etudiant1   Cleartext-Password := "Etudiant2026!"
+            Tunnel-Type = VLAN,
+            Tunnel-Medium-Type = IEEE-802,
+            Tunnel-Private-Group-ID = 10
+
+# Professeurs
+prof1       Cleartext-Password := "Prof2026!"
+            Tunnel-Type = VLAN,
+            Tunnel-Medium-Type = IEEE-802,
+            Tunnel-Private-Group-ID = 20
+
+# Admins
+admin       Cleartext-Password := "Admin2026!"
+            Tunnel-Type = VLAN,
+            Tunnel-Medium-Type = IEEE-802,
+            Tunnel-Private-Group-ID = 30

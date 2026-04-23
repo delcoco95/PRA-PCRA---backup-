@@ -1,0 +1,38 @@
+﻿# BorgBackup/Borgmatic configuration
+# RP06 — PRA IRIS Nice
+# Strategie 3-2-1-0-0
+
+location:
+  source_directories:
+    - /home/vagrant
+    - /etc
+    - /var/lib/docker/volumes
+  repositories:
+    - borguser@192.168.50.20:/srv/borg/mediaschool
+
+storage:
+  encryption_passphrase: 'BorgIRIS2026!'
+  compression: lz4
+  ssh_command: ssh -i /root/.ssh/borg_key -o StrictHostKeyChecking=no
+  archive_name_format: 'iris-{now:%Y-%m-%dT%H:%M:%S}'
+
+retention:
+  keep_hourly: 24
+  keep_daily: 7
+  keep_weekly: 4
+  keep_monthly: 6
+
+consistency:
+  checks:
+    - name: repository
+    - name: archives
+  check_last: 3
+
+hooks:
+  before_backup:
+    - echo "=== Backup demarre $(date) ===" >> /var/log/borgmatic.log
+  after_backup:
+    - echo "=== Backup termine $(date) ===" >> /var/log/borgmatic.log
+    - date +%s > /var/lib/node_exporter/textfile_collector/borg_last_backup.prom
+  on_error:
+    - echo "=== ERREUR backup $(date) ===" >> /var/log/borg-errors.log

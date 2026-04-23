@@ -1,0 +1,11 @@
+﻿# RP06 — Git ignore
+.vagrant/
+disks/
+*.vmdk
+*.vdi
+*.log
+*.pid
+__pycache__/
+.env.local
+node_modules/
+gen_scripts.py
