@@ -16,28 +16,47 @@ services:
     volumes:
       - ldap_data:/var/lib/ldap
       - ldap_config:/etc/ldap/slapd.d
-    restart: unless-stopped
+    restart: always
 
   phpldapadmin:
     image: osixia/phpldapadmin
     container_name: phpldapadmin
     environment:
       PHPLDAPADMIN_LDAP_HOSTS: openldap
+      PHPLDAPADMIN_HTTPS: "false"
     ports:
       - "8080:80"
     depends_on:
       - openldap
-    restart: unless-stopped
+    restart: always
 
-  freeradius:
-    image: freeradius/freeradius-server:3.2.3
-    container_name: freeradius
-    ports:
-      - "1812:1812/udp"
-      - "1813:1813/udp"
+  glpi-db:
+    image: mariadb:10.6
+    container_name: glpi-db
+    environment:
+      MYSQL_ROOT_PASSWORD: RootGLPI_IRIS_2026!
+      MYSQL_DATABASE: glpi
+      MYSQL_USER: glpi
+      MYSQL_PASSWORD: GlpiDB_IRIS_2026!
     volumes:
-      - ./freeradius:/etc/freeradius/3.0
-    restart: unless-stopped
+      - glpi_db:/var/lib/mysql
+    restart: always
+
+  glpi:
+    image: diouxx/glpi:latest
+    container_name: glpi
+    environment:
+      MARIADB_HOST: glpi-db
+      MARIADB_DATABASE: glpi
+      MARIADB_USER: glpi
+      MARIADB_PASSWORD: GlpiDB_IRIS_2026!
+    ports:
+      - "8090:80"
+    volumes:
+      - glpi_data:/var/www/html/glpi
+    depends_on:
+      - glpi-db
+    restart: always
 
   nextcloud-db:
     image: mariadb:10.6
@@ -49,7 +68,7 @@ services:
       MYSQL_PASSWORD: NextcloudDB_IRIS_2026!
     volumes:
       - nextcloud_db:/var/lib/mysql
-    restart: unless-stopped
+    restart: always
 
   nextcloud:
     image: nextcloud:apache
@@ -65,7 +84,7 @@ services:
       - nextcloud_data:/var/www/html
     depends_on:
       - nextcloud-db
-    restart: unless-stopped
+    restart: always
 
   wg-easy:
     image: weejewel/wg-easy
@@ -79,14 +98,14 @@ services:
     cap_add:
       - NET_ADMIN
       - SYS_MODULE
-    restart: unless-stopped
+    restart: always
 
   clamav:
     image: clamav/clamav:1.4_base
     container_name: clamav
     ports:
       - "3310:3310"
-    restart: unless-stopped
+    restart: always
 
   portainer:
     image: portainer/portainer-ce:latest
@@ -96,11 +115,13 @@ services:
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
       - portainer_data:/data
-    restart: unless-stopped
+    restart: always
 
 volumes:
   ldap_data:
   ldap_config:
+  glpi_db:
+  glpi_data:
   nextcloud_db:
   nextcloud_data:
   portainer_data:

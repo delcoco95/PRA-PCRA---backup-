@@ -9,3 +9,15 @@ __pycache__/
 .env.local
 node_modules/
 gen_scripts.py
+Vagrantfile.bak
+*.pptx
+*.docx
+backups_final/
+ETAT_PROJET_CHECKPOINT.md
+configs-cisco/configs-cisco/TFTP/*.bin
+configs-cisco/configs-cisco/TFTP/ap1g*
+configs-cisco/configs-cisco/TFTP/ap3g*
+# Fichiers confidentiels — NE PAS PUSH
+Documentation/08_Credentials_Access_RP06.md
+Documentation/Oral/10_Fiche_Oral_BTS_RP06.docx
+Documentation/schemas/09_Schema_Reseau_Complet_RP06.md

@@ -1,0 +1,108 @@
+# =============================================================
+# 01_structure.ldif — Structure OU et Groupes OpenLDAP
+# Projet : RP06 IRIS Nice — NVTech
+# Miroir de l'AD RP01 (MEDIASCHOOL\dc=iris,dc=local)
+# =============================================================
+
+# ── OU Utilisateurs ──────────────────────────────────────────
+dn: ou=Utilisateurs,dc=iris,dc=local
+objectClass: organizationalUnit
+ou: Utilisateurs
+description: Tous les comptes utilisateurs IRIS
+
+# ── OU Etudiants (sous Utilisateurs) ─────────────────────────
+dn: ou=Etudiants,ou=Utilisateurs,dc=iris,dc=local
+objectClass: organizationalUnit
+ou: Etudiants
+description: Etudiants SISR et SLAM — VLAN 10
+
+# ── OU Professeurs (sous Utilisateurs) ───────────────────────
+dn: ou=Professeurs,ou=Utilisateurs,dc=iris,dc=local
+objectClass: organizationalUnit
+ou: Professeurs
+description: Professeurs IRIS — VLAN 20
+
+# ── OU Administration (sous Utilisateurs) ────────────────────
+dn: ou=Administration,ou=Utilisateurs,dc=iris,dc=local
+objectClass: organizationalUnit
+ou: Administration
+description: Personnels administratifs — VLAN 30
+
+# ── OU Invites (sous Utilisateurs) ───────────────────────────
+dn: ou=Invites,ou=Utilisateurs,dc=iris,dc=local
+objectClass: organizationalUnit
+ou: Invites
+description: Visiteurs et invites — VLAN 40
+
+# ── OU Groupes ───────────────────────────────────────────────
+dn: ou=Groupes,dc=iris,dc=local
+objectClass: organizationalUnit
+ou: Groupes
+description: Groupes de securite IRIS
+
+# ── OU ServiceAccounts ───────────────────────────────────────
+dn: ou=ServiceAccounts,dc=iris,dc=local
+objectClass: organizationalUnit
+ou: ServiceAccounts
+description: Comptes de service
+
+# ── Groupe GRP_Etudiants_SISR ────────────────────────────────
+dn: cn=GRP_Etudiants_SISR,ou=Groupes,dc=iris,dc=local
+objectClass: groupOfNames
+cn: GRP_Etudiants_SISR
+description: Etudiants BTS SIO SISR — VLAN 10
+member: uid=nedj.belloum,ou=Etudiants,ou=Utilisateurs,dc=iris,dc=local
+member: uid=edib.saoud,ou=Etudiants,ou=Utilisateurs,dc=iris,dc=local
+member: uid=julien.marcucci,ou=Etudiants,ou=Utilisateurs,dc=iris,dc=local
+member: uid=louka.lavenir,ou=Etudiants,ou=Utilisateurs,dc=iris,dc=local
+member: uid=omar.talibi,ou=Etudiants,ou=Utilisateurs,dc=iris,dc=local
+member: uid=remi.bears,ou=Etudiants,ou=Utilisateurs,dc=iris,dc=local
+member: uid=said.ahmedmoussa,ou=Etudiants,ou=Utilisateurs,dc=iris,dc=local
+member: uid=vincent.andreo,ou=Etudiants,ou=Utilisateurs,dc=iris,dc=local
+member: uid=hendrik.thouvenin,ou=Etudiants,ou=Utilisateurs,dc=iris,dc=local
+
+# ── Groupe GRP_Etudiants_SLAM ────────────────────────────────
+dn: cn=GRP_Etudiants_SLAM,ou=Groupes,dc=iris,dc=local
+objectClass: groupOfNames
+cn: GRP_Etudiants_SLAM
+description: Etudiants BTS SIO SLAM — VLAN 10
+member: uid=yanis.adidi,ou=Etudiants,ou=Utilisateurs,dc=iris,dc=local
+member: uid=mohamed.boukhatem,ou=Etudiants,ou=Utilisateurs,dc=iris,dc=local
+member: uid=klaudia.juhasz,ou=Etudiants,ou=Utilisateurs,dc=iris,dc=local
+member: uid=denys.lyulchak,ou=Etudiants,ou=Utilisateurs,dc=iris,dc=local
+member: uid=kevin.senasson,ou=Etudiants,ou=Utilisateurs,dc=iris,dc=local
+
+# ── Groupe GRP_Profs ─────────────────────────────────────────
+dn: cn=GRP_Profs,ou=Groupes,dc=iris,dc=local
+objectClass: groupOfNames
+cn: GRP_Profs
+description: Professeurs IRIS — VLAN 20
+member: uid=yan.bourquard,ou=Professeurs,ou=Utilisateurs,dc=iris,dc=local
+member: uid=stephanie.tanzi,ou=Professeurs,ou=Utilisateurs,dc=iris,dc=local
+member: uid=terrence.ferut,ou=Professeurs,ou=Utilisateurs,dc=iris,dc=local
+member: uid=hayk.kaymakcilar,ou=Professeurs,ou=Utilisateurs,dc=iris,dc=local
+member: uid=raphael.tirintino,ou=Professeurs,ou=Utilisateurs,dc=iris,dc=local
+member: uid=melanie.lejeune,ou=Professeurs,ou=Utilisateurs,dc=iris,dc=local
+member: uid=lynda.hamidat,ou=Professeurs,ou=Utilisateurs,dc=iris,dc=local
+
+# ── Groupe GRP_Administration ─────────────────────────────────
+dn: cn=GRP_Administration,ou=Groupes,dc=iris,dc=local
+objectClass: groupOfNames
+cn: GRP_Administration
+description: Administration IRIS — VLAN 30
+member: uid=marie.agnamazian,ou=Administration,ou=Utilisateurs,dc=iris,dc=local
+member: uid=enzo.sun,ou=Administration,ou=Utilisateurs,dc=iris,dc=local
+
+# ── Groupe GRP_Invites ────────────────────────────────────────
+dn: cn=GRP_Invites,ou=Groupes,dc=iris,dc=local
+objectClass: groupOfNames
+cn: GRP_Invites
+description: Visiteurs et invites IRIS — VLAN 40
+member: uid=invite.test,ou=Invites,ou=Utilisateurs,dc=iris,dc=local
+
+# ── Groupe GRP_IT_Admin ───────────────────────────────────────
+dn: cn=GRP_IT_Admin,ou=Groupes,dc=iris,dc=local
+objectClass: groupOfNames
+cn: GRP_IT_Admin
+description: Administrateurs IT IRIS — VLAN 50
+member: uid=nedj.belloum.admin,ou=ServiceAccounts,dc=iris,dc=local

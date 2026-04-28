@@ -1,0 +1,71 @@
+enable
+configure terminal
+hostname SW-IRIS
+no ip domain-lookup
+vlan 10
+ name ETUDIANTS
+vlan 20
+ name PROFESSEURS
+vlan 30
+ name ADMINISTRATION
+vlan 40
+ name GUEST
+vlan 50
+ name MANAGEMENT
+vlan 99
+ name PRE_AUTH
+interface vlan 50
+ ip address 192.168.50.2 255.255.255.0
+ no shutdown
+ip default-gateway 192.168.50.1
+interface GigabitEthernet1/0/1
+ description PC-Windows-SRV-MEDIASCHOOL
+ switchport mode trunk
+ switchport trunk native vlan 50
+ switchport trunk allowed vlan 10,20,30,40,50,99
+ no shutdown
+interface GigabitEthernet1/0/2
+ description Routeur-ISR1941W
+ switchport mode trunk
+ switchport trunk allowed vlan 10,20,30,40,50,99
+ no shutdown
+interface range GigabitEthernet1/0/3 - 20
+ description Port-Client-802.1X
+ switchport mode access
+ switchport access vlan 99
+ switchport nonegotiate
+ authentication port-control auto
+ authentication event fail action next-method
+ authentication event server dead action reinitialize vlan 40
+ dot1x pae authenticator
+ dot1x timeout tx-period 10
+ spanning-tree portfast
+ no shutdown
+interface GigabitEthernet1/0/21
+ description AP-Cisco-C9105AXI-E
+ switchport mode trunk
+ switchport trunk native vlan 50
+ switchport trunk allowed vlan 10,20,40,50
+ spanning-tree portfast trunk
+ no shutdown
+interface range GigabitEthernet1/0/22 - 24
+ description Port-Inutilise
+ shutdown
+aaa new-model
+aaa authentication dot1x default group radius
+aaa authorization network default group radius
+aaa accounting dot1x default start-stop group radius
+dot1x system-auth-control
+radius server FREERADIUS-IRIS
+ address ipv4 192.168.50.11 auth-port 1812 acct-port 1813
+ key RadiusTest_IRIS_2026!
+ip domain-name iris.local
+username admin privilege 15 secret NVTech_Admin2026!
+enable secret NVTech_Admin2026!
+line vty 0 4
+ transport input ssh
+ login local
+line con 0
+ login local
+end
+write memory

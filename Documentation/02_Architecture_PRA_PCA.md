@@ -23,7 +23,7 @@
           |.50.10   |  | VIP  |  |.50.30     |
           |         |  |.50.50|  |           |
           |OpenLDAP |  |      |  |Prometheus |
-          |RADIUS   |<-+VRRP  |  |Grafana    |
+          |GLPI     |<-+VRRP  |  |Grafana    |
           |Nextcloud|  |      |  |Alertmgr   |
           |WireGuard|  +------+  +-----------+
           |ClamAV   |       |
@@ -169,8 +169,7 @@ Sources:
 | HTTP Nextcloud | 80 | TCP | VLAN 50 |
 | LDAP | 389 | TCP | VLAN 50 |
 | LDAPS | 636 | TCP | VLAN 50 |
-| RADIUS Auth | 1812 | UDP | Cisco |
-| RADIUS Acct | 1813 | UDP | Cisco |
+| GLPI | 8090 | TCP | VLAN 50 |
 | phpLDAPadmin | 8080 | TCP | VLAN 50 |
 | DRBD | 7789 | TCP | Replication |
 | Node Exporter | 9100 | TCP | Monitoring |

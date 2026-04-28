@@ -7,6 +7,12 @@ apt-get update -qq && apt-get upgrade -y -qq
 
 apt-get install -y drbd-utils keepalived borgbackup borgmatic docker.io docker-compose-v2 curl wget net-tools ufw
 
+# Installer le module kernel DRBD
+KERN=$(uname -r)
+apt-get install -y linux-modules-extra-${KERN} 2>/dev/null || true
+modprobe drbd || true
+echo "drbd" >> /etc/modules
+
 usermod -aG docker vagrant
 
 cd /vagrant && docker compose up -d
@@ -61,6 +67,10 @@ vrrp_instance VI_1 {
   virtual_router_id 51
   priority 100
   advert_int 1
+  unicast_src_ip 192.168.50.10
+  unicast_peer {
+    192.168.50.20
+  }
   authentication {
     auth_type PASS
     auth_pass VRRP_IRIS_2026!
@@ -76,7 +86,8 @@ KVEOF
 
 cat > /usr/local/bin/check_services.sh << 'CHKEOF'
 #!/bin/bash
-docker inspect --format='{{.State.Running}}' freeradius 2>/dev/null | grep -q true || exit 1
+docker inspect --format='{{.State.Running}}' nextcloud 2>/dev/null | grep -q true || exit 1
+docker inspect --format='{{.State.Running}}' glpi 2>/dev/null | grep -q true || exit 1
 docker inspect --format='{{.State.Running}}' openldap 2>/dev/null | grep -q true || exit 1
 exit 0
 CHKEOF
@@ -116,8 +127,7 @@ ufw allow 22/tcp
 ufw allow 80/tcp
 ufw allow 389/tcp
 ufw allow 636/tcp
-ufw allow 1812/udp
-ufw allow 1813/udp
+ufw allow 8090/tcp
 ufw allow 7789/tcp
 ufw allow 9100/tcp
 ufw allow 51820/udp

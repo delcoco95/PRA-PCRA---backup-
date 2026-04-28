@@ -6,6 +6,12 @@ export DEBIAN_FRONTEND=noninteractive
 apt-get update -qq && apt-get upgrade -y -qq
 apt-get install -y drbd-utils keepalived borgbackup curl wget net-tools ufw
 
+# Installer le module kernel DRBD
+KERN=$(uname -r)
+apt-get install -y linux-modules-extra-${KERN} 2>/dev/null || true
+modprobe drbd || true
+echo "drbd" >> /etc/modules
+
 useradd -m -s /bin/bash borguser 2>/dev/null || true
 mkdir -p /srv/borg/mediaschool
 chown -R borguser:borguser /srv/borg
@@ -55,6 +61,10 @@ vrrp_instance VI_1 {
   virtual_router_id 51
   priority 90
   advert_int 1
+  unicast_src_ip 192.168.50.20
+  unicast_peer {
+    192.168.50.10
+  }
   authentication {
     auth_type PASS
     auth_pass VRRP_IRIS_2026!

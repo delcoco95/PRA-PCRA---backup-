@@ -1,0 +1,445 @@
+# =============================================================
+# 02_users.ldif — Comptes utilisateurs OpenLDAP
+# Source : AD MEDIASCHOOL RP01 (miroir exact)
+# Base DN : dc=iris,dc=local
+# =============================================================
+
+# ═══════════════════════════════════════════════════════
+# ETUDIANTS SISR — VLAN 10
+# ═══════════════════════════════════════════════════════
+
+dn: uid=nedj.belloum,ou=Etudiants,ou=Utilisateurs,dc=iris,dc=local
+objectClass: inetOrgPerson
+objectClass: posixAccount
+objectClass: shadowAccount
+uid: nedj.belloum
+cn: Nedj Belloum
+sn: Belloum
+givenName: Nedj
+mail: nedj.belloum@iris.local
+userPassword: {CLEARTEXT}PasswordSISR2_2026!
+uidNumber: 1001
+gidNumber: 1010
+homeDirectory: /home/nedj.belloum
+loginShell: /bin/bash
+description: Etudiant BTS SIO SISR — VLAN 10
+
+dn: uid=edib.saoud,ou=Etudiants,ou=Utilisateurs,dc=iris,dc=local
+objectClass: inetOrgPerson
+objectClass: posixAccount
+objectClass: shadowAccount
+uid: edib.saoud
+cn: Edib Saoud
+sn: Saoud
+givenName: Edib
+mail: edib.saoud@iris.local
+userPassword: {CLEARTEXT}PasswordSISR2_2026!
+uidNumber: 1002
+gidNumber: 1010
+homeDirectory: /home/edib.saoud
+loginShell: /bin/bash
+description: Etudiant BTS SIO SISR — VLAN 10
+
+dn: uid=julien.marcucci,ou=Etudiants,ou=Utilisateurs,dc=iris,dc=local
+objectClass: inetOrgPerson
+objectClass: posixAccount
+objectClass: shadowAccount
+uid: julien.marcucci
+cn: Julien Marcucci
+sn: Marcucci
+givenName: Julien
+mail: julien.marcucci@iris.local
+userPassword: {CLEARTEXT}PasswordSISR2_2026!
+uidNumber: 1003
+gidNumber: 1010
+homeDirectory: /home/julien.marcucci
+loginShell: /bin/bash
+description: Etudiant BTS SIO SISR — VLAN 10
+
+dn: uid=louka.lavenir,ou=Etudiants,ou=Utilisateurs,dc=iris,dc=local
+objectClass: inetOrgPerson
+objectClass: posixAccount
+objectClass: shadowAccount
+uid: louka.lavenir
+cn: Louka Lavenir
+sn: Lavenir
+givenName: Louka
+mail: louka.lavenir@iris.local
+userPassword: {CLEARTEXT}PasswordSISR2_2026!
+uidNumber: 1004
+gidNumber: 1010
+homeDirectory: /home/louka.lavenir
+loginShell: /bin/bash
+description: Etudiant BTS SIO SISR — VLAN 10
+
+dn: uid=omar.talibi,ou=Etudiants,ou=Utilisateurs,dc=iris,dc=local
+objectClass: inetOrgPerson
+objectClass: posixAccount
+objectClass: shadowAccount
+uid: omar.talibi
+cn: Omar Talibi
+sn: Talibi
+givenName: Omar
+mail: omar.talibi@iris.local
+userPassword: {CLEARTEXT}PasswordSISR2_2026!
+uidNumber: 1005
+gidNumber: 1010
+homeDirectory: /home/omar.talibi
+loginShell: /bin/bash
+description: Etudiant BTS SIO SISR — VLAN 10
+
+dn: uid=remi.bears,ou=Etudiants,ou=Utilisateurs,dc=iris,dc=local
+objectClass: inetOrgPerson
+objectClass: posixAccount
+objectClass: shadowAccount
+uid: remi.bears
+cn: Remi Bears
+sn: Bears
+givenName: Remi
+mail: remi.bears@iris.local
+userPassword: {CLEARTEXT}PasswordSISR2_2026!
+uidNumber: 1006
+gidNumber: 1010
+homeDirectory: /home/remi.bears
+loginShell: /bin/bash
+description: Etudiant BTS SIO SISR — VLAN 10
+
+dn: uid=said.ahmedmoussa,ou=Etudiants,ou=Utilisateurs,dc=iris,dc=local
+objectClass: inetOrgPerson
+objectClass: posixAccount
+objectClass: shadowAccount
+uid: said.ahmedmoussa
+cn: Said Ahmed Moussa
+sn: Ahmed Moussa
+givenName: Said
+mail: said.ahmedmoussa@iris.local
+userPassword: {CLEARTEXT}PasswordSISR2_2026!
+uidNumber: 1007
+gidNumber: 1010
+homeDirectory: /home/said.ahmedmoussa
+loginShell: /bin/bash
+description: Etudiant BTS SIO SISR — VLAN 10
+
+dn: uid=vincent.andreo,ou=Etudiants,ou=Utilisateurs,dc=iris,dc=local
+objectClass: inetOrgPerson
+objectClass: posixAccount
+objectClass: shadowAccount
+uid: vincent.andreo
+cn: Vincent Andreo
+sn: Andreo
+givenName: Vincent
+mail: vincent.andreo@iris.local
+userPassword: {CLEARTEXT}PasswordSISR2_2026!
+uidNumber: 1008
+gidNumber: 1010
+homeDirectory: /home/vincent.andreo
+loginShell: /bin/bash
+description: Etudiant BTS SIO SISR — VLAN 10
+
+dn: uid=hendrik.thouvenin,ou=Etudiants,ou=Utilisateurs,dc=iris,dc=local
+objectClass: inetOrgPerson
+objectClass: posixAccount
+objectClass: shadowAccount
+uid: hendrik.thouvenin
+cn: Hendrik Thouvenin
+sn: Thouvenin
+givenName: Hendrik
+mail: hendrik.thouvenin@iris.local
+userPassword: {CLEARTEXT}PasswordSISR2_2026!
+uidNumber: 1009
+gidNumber: 1010
+homeDirectory: /home/hendrik.thouvenin
+loginShell: /bin/bash
+description: Etudiant BTS SIO SISR — VLAN 10
+
+# ═══════════════════════════════════════════════════════
+# ETUDIANTS SLAM — VLAN 10
+# ═══════════════════════════════════════════════════════
+
+dn: uid=yanis.adidi,ou=Etudiants,ou=Utilisateurs,dc=iris,dc=local
+objectClass: inetOrgPerson
+objectClass: posixAccount
+objectClass: shadowAccount
+uid: yanis.adidi
+cn: Yanis Adidi
+sn: Adidi
+givenName: Yanis
+mail: yanis.adidi@iris.local
+userPassword: {CLEARTEXT}PasswordSLAM2_2026!
+uidNumber: 1011
+gidNumber: 1010
+homeDirectory: /home/yanis.adidi
+loginShell: /bin/bash
+description: Etudiant BTS SIO SLAM — VLAN 10
+
+dn: uid=mohamed.boukhatem,ou=Etudiants,ou=Utilisateurs,dc=iris,dc=local
+objectClass: inetOrgPerson
+objectClass: posixAccount
+objectClass: shadowAccount
+uid: mohamed.boukhatem
+cn: Mohamed Boukhatem
+sn: Boukhatem
+givenName: Mohamed
+mail: mohamed.boukhatem@iris.local
+userPassword: {CLEARTEXT}PasswordSLAM2_2026!
+uidNumber: 1012
+gidNumber: 1010
+homeDirectory: /home/mohamed.boukhatem
+loginShell: /bin/bash
+description: Etudiant BTS SIO SLAM — VLAN 10
+
+dn: uid=klaudia.juhasz,ou=Etudiants,ou=Utilisateurs,dc=iris,dc=local
+objectClass: inetOrgPerson
+objectClass: posixAccount
+objectClass: shadowAccount
+uid: klaudia.juhasz
+cn: Klaudia Juhasz
+sn: Juhasz
+givenName: Klaudia
+mail: klaudia.juhasz@iris.local
+userPassword: {CLEARTEXT}PasswordSLAM2_2026!
+uidNumber: 1013
+gidNumber: 1010
+homeDirectory: /home/klaudia.juhasz
+loginShell: /bin/bash
+description: Etudiant BTS SIO SLAM — VLAN 10
+
+dn: uid=denys.lyulchak,ou=Etudiants,ou=Utilisateurs,dc=iris,dc=local
+objectClass: inetOrgPerson
+objectClass: posixAccount
+objectClass: shadowAccount
+uid: denys.lyulchak
+cn: Denys Lyulchak
+sn: Lyulchak
+givenName: Denys
+mail: denys.lyulchak@iris.local
+userPassword: {CLEARTEXT}PasswordSLAM2_2026!
+uidNumber: 1014
+gidNumber: 1010
+homeDirectory: /home/denys.lyulchak
+loginShell: /bin/bash
+description: Etudiant BTS SIO SLAM — VLAN 10
+
+dn: uid=kevin.senasson,ou=Etudiants,ou=Utilisateurs,dc=iris,dc=local
+objectClass: inetOrgPerson
+objectClass: posixAccount
+objectClass: shadowAccount
+uid: kevin.senasson
+cn: Kevin Senasson
+sn: Senasson
+givenName: Kevin
+mail: kevin.senasson@iris.local
+userPassword: {CLEARTEXT}PasswordSLAM2_2026!
+uidNumber: 1015
+gidNumber: 1010
+homeDirectory: /home/kevin.senasson
+loginShell: /bin/bash
+description: Etudiant BTS SIO SLAM — VLAN 10
+
+# ═══════════════════════════════════════════════════════
+# PROFESSEURS — VLAN 20
+# ═══════════════════════════════════════════════════════
+
+dn: uid=yan.bourquard,ou=Professeurs,ou=Utilisateurs,dc=iris,dc=local
+objectClass: inetOrgPerson
+objectClass: posixAccount
+objectClass: shadowAccount
+uid: yan.bourquard
+cn: Yan Bourquard
+sn: Bourquard
+givenName: Yan
+mail: yan.bourquard@iris.local
+userPassword: {CLEARTEXT}Prof_IRIS_2026!
+uidNumber: 2001
+gidNumber: 1020
+homeDirectory: /home/yan.bourquard
+loginShell: /bin/bash
+description: Professeur IRIS — VLAN 20
+
+dn: uid=stephanie.tanzi,ou=Professeurs,ou=Utilisateurs,dc=iris,dc=local
+objectClass: inetOrgPerson
+objectClass: posixAccount
+objectClass: shadowAccount
+uid: stephanie.tanzi
+cn: Stephanie Tanzi
+sn: Tanzi
+givenName: Stephanie
+mail: stephanie.tanzi@iris.local
+userPassword: {CLEARTEXT}Prof_IRIS_2026!
+uidNumber: 2002
+gidNumber: 1020
+homeDirectory: /home/stephanie.tanzi
+loginShell: /bin/bash
+description: Professeur IRIS — VLAN 20
+
+dn: uid=terrence.ferut,ou=Professeurs,ou=Utilisateurs,dc=iris,dc=local
+objectClass: inetOrgPerson
+objectClass: posixAccount
+objectClass: shadowAccount
+uid: terrence.ferut
+cn: Terrence Ferut
+sn: Ferut
+givenName: Terrence
+mail: terrence.ferut@iris.local
+userPassword: {CLEARTEXT}Prof_IRIS_2026!
+uidNumber: 2003
+gidNumber: 1020
+homeDirectory: /home/terrence.ferut
+loginShell: /bin/bash
+description: Professeur IRIS — VLAN 20
+
+dn: uid=hayk.kaymakcilar,ou=Professeurs,ou=Utilisateurs,dc=iris,dc=local
+objectClass: inetOrgPerson
+objectClass: posixAccount
+objectClass: shadowAccount
+uid: hayk.kaymakcilar
+cn: Hayk Kaymakcilar
+sn: Kaymakcilar
+givenName: Hayk
+mail: hayk.kaymakcilar@iris.local
+userPassword: {CLEARTEXT}Prof_IRIS_2026!
+uidNumber: 2004
+gidNumber: 1020
+homeDirectory: /home/hayk.kaymakcilar
+loginShell: /bin/bash
+description: Professeur IRIS — VLAN 20
+
+dn: uid=raphael.tirintino,ou=Professeurs,ou=Utilisateurs,dc=iris,dc=local
+objectClass: inetOrgPerson
+objectClass: posixAccount
+objectClass: shadowAccount
+uid: raphael.tirintino
+cn: Raphael Tirintino
+sn: Tirintino
+givenName: Raphael
+mail: raphael.tirintino@iris.local
+userPassword: {CLEARTEXT}Prof_IRIS_2026!
+uidNumber: 2005
+gidNumber: 1020
+homeDirectory: /home/raphael.tirintino
+loginShell: /bin/bash
+description: Professeur IRIS — VLAN 20
+
+dn: uid=melanie.lejeune,ou=Professeurs,ou=Utilisateurs,dc=iris,dc=local
+objectClass: inetOrgPerson
+objectClass: posixAccount
+objectClass: shadowAccount
+uid: melanie.lejeune
+cn: Melanie Lejeune
+sn: Lejeune
+givenName: Melanie
+mail: melanie.lejeune@iris.local
+userPassword: {CLEARTEXT}Prof_IRIS_2026!
+uidNumber: 2006
+gidNumber: 1020
+homeDirectory: /home/melanie.lejeune
+loginShell: /bin/bash
+description: Professeur IRIS — VLAN 20
+
+dn: uid=lynda.hamidat,ou=Professeurs,ou=Utilisateurs,dc=iris,dc=local
+objectClass: inetOrgPerson
+objectClass: posixAccount
+objectClass: shadowAccount
+uid: lynda.hamidat
+cn: Lynda Hamidat
+sn: Hamidat
+givenName: Lynda
+mail: lynda.hamidat@iris.local
+userPassword: {CLEARTEXT}Prof_IRIS_2026!
+uidNumber: 2007
+gidNumber: 1020
+homeDirectory: /home/lynda.hamidat
+loginShell: /bin/bash
+description: Professeur IRIS — VLAN 20
+
+# ═══════════════════════════════════════════════════════
+# ADMINISTRATION — VLAN 30
+# ═══════════════════════════════════════════════════════
+
+dn: uid=marie.agnamazian,ou=Administration,ou=Utilisateurs,dc=iris,dc=local
+objectClass: inetOrgPerson
+objectClass: posixAccount
+objectClass: shadowAccount
+uid: marie.agnamazian
+cn: Marie Agnamazian
+sn: Agnamazian
+givenName: Marie
+mail: marie.agnamazian@iris.local
+userPassword: {CLEARTEXT}Admin_IRIS_2026!
+uidNumber: 3001
+gidNumber: 1030
+homeDirectory: /home/marie.agnamazian
+loginShell: /bin/bash
+description: Administration IRIS — VLAN 30
+
+dn: uid=enzo.sun,ou=Administration,ou=Utilisateurs,dc=iris,dc=local
+objectClass: inetOrgPerson
+objectClass: posixAccount
+objectClass: shadowAccount
+uid: enzo.sun
+cn: Enzo Sun
+sn: Sun
+givenName: Enzo
+mail: enzo.sun@iris.local
+userPassword: {CLEARTEXT}Admin_IRIS_2026!
+uidNumber: 3002
+gidNumber: 1030
+homeDirectory: /home/enzo.sun
+loginShell: /bin/bash
+description: Administration IRIS — VLAN 30
+
+# ═══════════════════════════════════════════════════════
+# INVITES — VLAN 40
+# ═══════════════════════════════════════════════════════
+
+dn: uid=invite.test,ou=Invites,ou=Utilisateurs,dc=iris,dc=local
+objectClass: inetOrgPerson
+objectClass: posixAccount
+objectClass: shadowAccount
+uid: invite.test
+cn: Invite Test
+sn: Test
+givenName: Invite
+mail: invite.test@iris.local
+userPassword: {CLEARTEXT}Invite_IRIS_2026!
+uidNumber: 4001
+gidNumber: 1040
+homeDirectory: /home/invite.test
+loginShell: /bin/bash
+description: Compte invite visiteur — VLAN 40
+
+# ═══════════════════════════════════════════════════════
+# COMPTES DE SERVICE — VLAN 50
+# ═══════════════════════════════════════════════════════
+
+dn: uid=nedj.belloum.admin,ou=ServiceAccounts,dc=iris,dc=local
+objectClass: inetOrgPerson
+objectClass: posixAccount
+objectClass: shadowAccount
+uid: nedj.belloum.admin
+cn: Nedj Belloum Admin
+sn: Belloum
+givenName: Nedj
+mail: nedj.belloum.admin@iris.local
+userPassword: {CLEARTEXT}NVTech_Admin2026!
+uidNumber: 5001
+gidNumber: 1050
+homeDirectory: /home/nedj.belloum.admin
+loginShell: /bin/bash
+description: Admin IT Domain — VLAN 50
+
+dn: uid=svc_nps,ou=ServiceAccounts,dc=iris,dc=local
+objectClass: inetOrgPerson
+objectClass: posixAccount
+objectClass: shadowAccount
+uid: svc_nps
+cn: Service NPS RADIUS
+sn: NPS
+givenName: Service
+mail: svc_nps@iris.local
+userPassword: {CLEARTEXT}SvcNPS_IRIS_2026!
+uidNumber: 5002
+gidNumber: 1050
+homeDirectory: /home/svc_nps
+loginShell: /bin/bash
+description: Compte service NPS/RADIUS

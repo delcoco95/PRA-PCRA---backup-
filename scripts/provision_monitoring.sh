@@ -135,12 +135,14 @@ SVCEOF
 wget -q -O /usr/share/keyrings/grafana.key https://apt.grafana.com/gpg.key
 echo "deb [signed-by=/usr/share/keyrings/grafana.key] https://apt.grafana.com stable main" | tee /etc/apt/sources.list.d/grafana.list
 apt-get update -qq && apt-get install -y grafana
-grafana-cli admin reset-admin-password Grafana_IRIS_2026! 2>/dev/null || true
 
 systemctl daemon-reload
 for svc in prometheus alertmanager node_exporter grafana-server; do
   systemctl enable --now $svc 2>/dev/null || true
 done
+# Attendre que Grafana soit pret avant de changer le mot de passe
+sleep 8
+grafana-cli --homepath /usr/share/grafana admin reset-admin-password 'Grafana_IRIS_2026!' 2>/dev/null || true
 
 apt-get install -y ufw
 ufw allow 22/tcp

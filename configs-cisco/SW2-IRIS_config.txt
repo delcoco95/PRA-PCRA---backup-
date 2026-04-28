@@ -1,0 +1,205 @@
+! ============================================================
+! SW2-IRIS_config.txt — Cisco Catalyst 2960-S
+! Projet : IRIS-NICE-2024-RP01
+! Auteur  : Nedjmeddine Belloum
+!
+! Rôle    : Switch niveau accès + distribution
+! VLANs   : 10 Étudiants / 20 Profs / 30 Admin / 40 Guest
+!            50 Management / 99 PRE_AUTH quarantaine
+! 802.1X  : Activé sur tous les ports accès
+! RADIUS  : Vers DC-IRIS-01 192.168.50.10 (NPS)
+! ============================================================
+
+version 15.2
+service timestamps debug datetime msec
+service timestamps log datetime msec
+service password-encryption
+!
+hostname SW2-IRIS
+!
+enable secret NVTech_Admin2026!
+!
+username admin privilege 15 secret NVTech_Admin2026!
+!
+! ── AAA (802.1X via RADIUS NPS) ──────────────────────────
+aaa new-model
+aaa authentication dot1x default group radius
+aaa authorization network default group radius
+aaa accounting dot1x default start-stop group radius
+!
+! ── RADIUS Clients ────────────────────────────────────────
+radius server NPS-IRIS
+ address ipv4 192.168.50.10 auth-port 1812 acct-port 1813
+ key RadiusSW_IRIS_2026!
+!
+! ── 802.1X Global ─────────────────────────────────────────
+dot1x system-auth-control
+!
+! ── VLANs ─────────────────────────────────────────────────
+vlan 10
+ name ETUDIANTS
+!
+vlan 20
+ name PROFS
+!
+vlan 30
+ name ADMINISTRATION
+!
+vlan 40
+ name GUEST
+!
+vlan 50
+ name MANAGEMENT_IT
+!
+vlan 99
+ name PRE_AUTH
+!
+! ── Spanning Tree ─────────────────────────────────────────
+spanning-tree mode rapid-pvst
+spanning-tree portfast default
+spanning-tree extend system-id
+!
+! ── Interface VLAN de gestion ─────────────────────────────
+interface Vlan50
+ description MANAGEMENT-IT
+ ip address 192.168.50.2 255.255.255.0
+ no shutdown
+!
+ip default-gateway 192.168.50.1
+!
+! ── Uplink vers RT2-IRIS (Gi0/1) ─────────────────────────
+interface GigabitEthernet0/1
+ description UPLINK-vers-RT2-IRIS
+ switchport mode trunk
+ switchport trunk native vlan 50
+ switchport trunk allowed vlan 10,20,30,40,50,99
+ no shutdown
+!
+! ── Uplink vers AP-IRIS (Gi0/2) ───────────────────────────
+interface GigabitEthernet0/2
+ description UPLINK-vers-AP-IRIS
+ switchport mode trunk
+ switchport trunk native vlan 99
+ switchport trunk allowed vlan 10,20,30,40,99
+ no shutdown
+!
+! ── Port DC-IRIS-01 (Fa0/1) ───────────────────────────────
+interface FastEthernet0/1
+ description DC-IRIS-01-192.168.50.10
+ switchport mode access
+ switchport access vlan 50
+ spanning-tree portfast
+ no shutdown
+!
+! ── Port SRV-LINUX-IRIS (Fa0/2) ───────────────────────────
+interface FastEthernet0/2
+ description SRV-LINUX-IRIS-192.168.50.20
+ switchport mode access
+ switchport access vlan 50
+ spanning-tree portfast
+ no shutdown
+!
+! ── Ports accès salles Étudiants (Fa0/10-19) ─────────────
+interface range FastEthernet0/10 - 19
+ description POSTES-ETUDIANTS
+ switchport mode access
+ switchport access vlan 99
+ switchport nonegotiate
+ spanning-tree portfast
+ spanning-tree bpduguard enable
+ ! 802.1X — VLAN dynamique assigné par NPS
+ authentication host-mode single-host
+ authentication order dot1x mab
+ authentication priority dot1x mab
+ authentication port-control auto
+ authentication periodic
+ authentication timer reauthenticate server
+ dot1x pae authenticator
+ dot1x timeout tx-period 10
+ no shutdown
+!
+! ── Ports accès salles Profs (Fa0/20-24) ─────────────────
+interface range FastEthernet0/20 - 24
+ description POSTES-PROFS
+ switchport mode access
+ switchport access vlan 99
+ switchport nonegotiate
+ spanning-tree portfast
+ spanning-tree bpduguard enable
+ authentication host-mode single-host
+ authentication order dot1x mab
+ authentication priority dot1x mab
+ authentication port-control auto
+ authentication periodic
+ authentication timer reauthenticate server
+ dot1x pae authenticator
+ dot1x timeout tx-period 10
+ no shutdown
+!
+! ── Ports accès Administration (Fa0/25-29) ────────────────
+interface range FastEthernet0/25 - 29
+ description POSTES-ADMIN
+ switchport mode access
+ switchport access vlan 99
+ switchport nonegotiate
+ spanning-tree portfast
+ spanning-tree bpduguard enable
+ authentication host-mode single-host
+ authentication order dot1x mab
+ authentication priority dot1x mab
+ authentication port-control auto
+ authentication periodic
+ authentication timer reauthenticate server
+ dot1x pae authenticator
+ dot1x timeout tx-period 10
+ no shutdown
+!
+! ── Ports non utilisés (désactivés + VLAN blackhole) ──────
+interface range FastEthernet0/30 - 48
+ description NON-UTILISE
+ switchport mode access
+ switchport access vlan 99
+ shutdown
+!
+! ── Services de sécurité ──────────────────────────────────
+ip dhcp snooping
+ip dhcp snooping vlan 10,20,30,40,50,99
+no ip dhcp snooping information option
+ip dhcp snooping trust interface GigabitEthernet0/1
+!
+ip arp inspection vlan 10,20,30,40,99
+ip arp inspection trust interface GigabitEthernet0/1
+ip arp inspection trust interface FastEthernet0/1
+!
+! ── NTP / Syslog ──────────────────────────────────────────
+ntp server 192.168.50.10
+logging host 192.168.50.10
+logging trap informational
+service timestamps log datetime localtime msec
+!
+! ── SSH + Accès SSH uniquement depuis VLAN 50 ─────────────
+ip domain-name mediaschool.local
+crypto key generate rsa modulus 2048
+ip ssh version 2
+ip ssh time-out 60
+ip ssh authentication-retries 3
+!
+line vty 0 15
+ login local
+ transport input ssh
+ access-class 50 in
+!
+ip access-list standard 50
+ permit 192.168.50.0 0.0.0.255
+ deny any log
+!
+line console 0
+ login local
+ logging synchronous
+!
+! ── Désactiver services inutiles ──────────────────────────
+no ip http server
+no ip http secure-server
+no cdp run
+!
+end

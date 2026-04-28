@@ -37,8 +37,8 @@ Ce projet met en place une infrastructure complete de **continuite et reprise d'
 |  SRV_MAIN (192.168.50.10)    SRV_BACKUP (192.168.50.20)    |
 |  +--------------------+      +--------------------+         |
 |  | OpenLDAP           |<===> | OpenLDAP (replique)|         |
-|  | FreeRADIUS         | DRBD | FreeRADIUS (standby|         |
-|  | Nextcloud          |      | BorgBackup serveur |         |
+|  | GLPI               | DRBD | BorgBackup serveur |         |
+|  | Nextcloud          |      | Keepalived BACKUP  |         |
 |  | WireGuard          |      | Keepalived BACKUP  |         |
 |  | ClamAV             |      +--------------------+         |
 |  | BorgBackup client  |                                     |
@@ -69,7 +69,7 @@ Ce projet met en place une infrastructure complete de **continuite et reprise d'
 | Keepalived/VRRP | Failover IP automatique PCA | 2.2+ |
 | Docker + Compose | Orchestration services | 24+ |
 | OpenLDAP | Annuaire LDAP | 1.5 |
-| FreeRADIUS | 802.1X / RADIUS | 3.2 |
+| GLPI | Gestion de parc et helpdesk | latest |
 | Nextcloud | Partage fichiers | latest |
 | WireGuard (wg-easy) | VPN | latest |
 | ClamAV | Antivirus | 1.4 |

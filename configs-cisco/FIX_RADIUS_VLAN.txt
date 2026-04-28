@@ -1,0 +1,50 @@
+! ============================================================
+! SCRIPT DE FIX — AP CISCO & SWITCH SW2
+! Projet IRIS — PRA/PCA
+! ============================================================
+
+! --- SUR LE SWITCH (SW2-IRIS) ---
+! S'assurer que le port vers l'AP (Fa0/1 dans vos logs) autorise le VLAN 10
+enable
+configure terminal
+interface FastEthernet0/1
+ description UPLINK-vers-AP-IRIS
+ switchport trunk allowed vlan add 10
+ exit
+do write
+
+! --- SUR L'AP (C9105AXI-E - EWC) ---
+! Déclarer le VLAN 10 et l'associer au profil FlexConnect
+enable
+configure terminal
+
+! 1. Créer le VLAN sur l'AP
+vlan 10
+ name ETUDIANTS
+ exit
+
+! 2. Configurer le mapping FlexConnect
+! On assume que vous utilisez le profil par défaut 'default-flex-profile'
+wireless profile flex default-flex-profile
+ vlan-name ETUDIANTS
+ vlan-id 10
+ exit
+
+! 3. Activer l'AAA Override sur le WLAN IRIS
+wlan IRIS
+ aaa-override
+ no shutdown
+ exit
+
+! 4. Redémarrer l'interface radio pour appliquer les changements (optionnel)
+interface Dot11Radio0
+ shutdown
+ no shutdown
+ exit
+interface Dot11Radio1
+ shutdown
+ no shutdown
+ exit
+
+do write
+! ============================================================
