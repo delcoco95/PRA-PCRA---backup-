@@ -1,9 +1,5 @@
 ﻿# RP06 — PRA/PCA IRIS Nice | NVTech
 
-![Tests](https://img.shields.io/badge/Tests-100%25%20passes-brightgreen)
-![Infrastructure](https://img.shields.io/badge/Infrastructure-3%20VMs%20Vagrant-blue)
-![PRA](https://img.shields.io/badge/PRA-BorgBackup%20RPO%3C1h-orange)
-![PCA](https://img.shields.io/badge/PCA-DRBD%2BKeepalived%20RTO%3C30s-red)
 
 **BTS SIO SISR — Epreuve E5 — MEDIASCHOOL / IRIS Nice — Session 2026**
 
@@ -122,9 +118,7 @@ RP06/
 │   ├── provision_main.sh        # Provisioning SRV_MAIN
 │   ├── provision_backup.sh      # Provisioning SRV_BACKUP
 │   └── provision_monitoring.sh  # Provisioning SRV_MONITORING
-├── freeradius/
-│   ├── clients.conf             # Clients Cisco RADIUS
-│   └── users                   # Utilisateurs 802.1X
+├── ldap/                        # Configuration OpenLDAP (structure + utilisateurs)
 ├── borgmatic/
 │   └── config.yaml              # Config sauvegarde
 ├── Documentation/

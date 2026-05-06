@@ -286,8 +286,7 @@ systemctl start keepalived  # Sur SRV_MAIN
 | 80 | TCP | HTTP Nextcloud |
 | 389 | TCP | LDAP |
 | 636 | TCP | LDAPS |
-| 1812 | UDP | RADIUS Auth |
-| 1813 | UDP | RADIUS Accounting |
+
 | 7789 | TCP | DRBD Replication |
 | 9100 | TCP | Node Exporter |
 | 9443 | TCP | Portainer HTTPS |

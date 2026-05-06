@@ -138,7 +138,6 @@ show vlan brief  # sur SW2-IRIS
 docker ps -a  # voir les containers en erreur
 
 # Logs d'un service specifique
-docker logs freeradius --tail 50
 docker logs openldap --tail 50
 docker logs nextcloud --tail 50
 

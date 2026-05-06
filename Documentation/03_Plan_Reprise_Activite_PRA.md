@@ -49,7 +49,7 @@ cd /vagrant && docker compose up -d
 ### Verification
 - `docker ps` — tous les services running
 - `curl http://localhost` — Nextcloud accessible
-- `radtest etudiant1 Etudiant2026! localhost 0 testing123` — RADIUS OK
+- `docker ps` — tous les services Docker running (9 containers)
 
 ---
 

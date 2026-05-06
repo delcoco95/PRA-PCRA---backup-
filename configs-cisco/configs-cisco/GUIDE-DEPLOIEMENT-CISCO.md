@@ -9,7 +9,6 @@
 |---------|-------------|
 | PC Ethernet 4 | IP statique 192.168.50.100 / 255.255.255.0 |
 | SRV_MEDIASCHOOL_COPY | VM Vagrant avec interface bridgée 192.168.50.11 |
-| FreeRADIUS | Conteneur UP, port 1812 exposé |
 | Câble console USB → Cisco | Branché sur PC et switch/routeur |
 | PuTTY (ou minicom) | Pour accès console |
 
@@ -54,13 +53,12 @@ ping 192.168.50.11
 # Doit répondre
 ```
 
-### 1e — Redémarrer FreeRADIUS (pour prendre en compte le nouveau clients.conf)
+### 1e — Vérifier la connectivité VM → Switch
 
 ```bash
 # Sur la VM
-cd /vagrant
-docker compose restart freeradius
-docker logs freeradius --tail=20
+ping 192.168.50.2
+# Doit répondre (Switch SVI)
 ```
 
 ---
@@ -155,24 +153,19 @@ RTR-IRIS# ping 192.168.50.11
 
 ---
 
-## Étape 4 — Test 802.1X end-to-end
+## Étape 4 — Vérification end-to-end
 
-### 4a — Test RADIUS depuis la VM
-
-```bash
-# Sur SRV_MEDIASCHOOL_COPY (vagrant ssh)
-docker exec freeradius radtest nedj.belloum "NVTech_Admin2026!" 192.168.50.11 1812 RadiusTest_IRIS_2026!
-# Résultat attendu : Access-Accept + Tunnel-Private-Group-Id = 30 (VLAN Admin)
-```
-
-### 4b — Test RADIUS depuis le switch
+### 4a — Test connectivité VLAN depuis le switch
 
 ```
-SW-IRIS# test aaa group radius server FREERADIUS-IRIS nedj.belloum NVTech_Admin2026! legacy
-! Résultat attendu : User successfully authenticated
+SW-IRIS# ping 192.168.50.11
+! Doit répondre (SRV_MEDIASCHOOL_COPY)
+
+SW-IRIS# show authentication sessions
+! Doit lister les sessions 802.1X actives
 ```
 
-### 4c — Test 802.1X avec un client
+### 4b — Test 802.1X avec un client
 
 1. Brancher un PC client sur Fa0/2 du switch
 2. Configurer le PC : `ncpa.cpl → Ethernet → Authentification → Activer 802.1X`
@@ -204,19 +197,6 @@ SW-IRIS# show authentication sessions interface FastEthernet0/2
 ---
 
 ## En cas de problème
-
-### FreeRADIUS ne répond pas depuis le switch
-
-```bash
-# Vérifier que FreeRADIUS écoute sur toutes les interfaces
-docker exec freeradius netstat -ulnp | grep 1812
-
-# Vérifier les logs en temps réel
-docker logs freeradius -f
-
-# Le client 192.168.50.2 est-il dans clients.conf ?
-grep -A5 "SW_IRIS" /vagrant/freeradius/clients.conf
-```
 
 ### Le switch ne ping pas 192.168.50.11
 
